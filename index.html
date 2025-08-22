@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I Love You Animation with Music</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: #ff4da6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+            position: relative;
+        }
+
+        .container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            height: 500px;
+            perspective: 1000px;
+        }
+
+        .heart {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform-style: preserve-3d;
+            animation: rotate 15s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: translate(-50%, -50%) rotateX(0deg) rotateY(0deg); }
+            100% { transform: translate(-50%, -50%) rotateX(360deg) rotateY(360deg); }
+        }
+
+        .text {
+            position: absolute;
+            font-size: 18px;
+            white-space: nowrap;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+
+        .text:hover {
+            transform: scale(1.5) !important;
+            z-index: 100;
+            text-shadow: 0 0 15px #ff4da6;
+        }
+
+        .message {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+            color: white;
+            font-size: 14px;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+
+        .message:hover {
+            opacity: 1;
+        }
+
+        .controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .btn {
+            background: rgba(255, 77, 166, 0.3);
+            color: white;
+            border: 1px solid #ff4da6;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn:hover {
+            background: rgba(255, 77, 166, 0.6);
+            transform: scale(1.1);
+        }
+
+        .title {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            font-size: 24px;
+            text-shadow: 0 0 10px rgba(255, 77, 166, 0.8);
+            z-index: 1000;
+        }
+
+        .hearts-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-heart {
+            position: absolute;
+            font-size: 20px;
+            color: rgba(255, 77, 166, 0.7);
+            animation: float 8s linear infinite;
+            opacity: 0;
+        }
+
+        .music-player {
+            position: absolute;
+            bottom: 60px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #ff4da6;
+            width: 300px;
+            z-index: 1000;
+        }
+
+        .music-player h3 {
+            color: white;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .music-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .music-btn {
+            background: rgba(255, 77, 166, 0.5);
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .music-btn:hover {
+            background: rgba(255, 77, 166, 0.8);
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .volume-control input {
+            width: 100%;
+        }
+
+        .song-list {
+            margin-top: 10px;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        .song-item {
+            padding: 8px;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+            margin-bottom: 5px;
+            background: rgba(255, 77, 166, 0.2);
+        }
+
+        .song-item:hover {
+            background: rgba(255, 77, 166, 0.4);
+        }
+
+        .song-item.active {
+            background: rgba(255, 77, 166, 0.6);
+        }
+
+        /* Scrollbar styling */
+        .song-list::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .song-list::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .song-list::-webkit-scrollbar-thumb {
+            background: rgba(255, 77, 166, 0.5);
+            border-radius: 10px;
+        }
+
+        .song-list::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 77, 166, 0.8);
+        }
+
+        @keyframes float {
+            0% {
+                top: 100%;
+                opacity: 0;
+                transform: translateX(0) rotate(0deg);
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 0.8;
+            }
+            100% {
+                top: -10%;
+                opacity: 0;
+                transform: translateX(100px) rotate(360deg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                height: 300px;
+            }
+            
+            .text {
+                font-size: 14px;
+            }
+            
+            .heart {
+                animation-duration: 20s;
+            }
+            
+            .title {
+                font-size: 18px;
+            }
+            
+            .btn {
+                padding: 6px 12px;
+                font-size: 14px;
+            }
+            
+            .music-player {
+                width: 250px;
+                left: 10px;
+                bottom: 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="heart" id="heart"></div>
+        <div class="hearts-container" id="hearts-container"></div>
+    </div>
+    
+    <h1 class="title">I Love You</h1>
+    
+    <div class="message">Click anywhere to change colors • Move cursor to interact</div>
+    
+    <div class="controls">
+        <button class="btn" id="pauseBtn"><i class="fas fa-pause"></i> Pause</button>
+        <button class="btn" id="speedBtn"><i class="fas fa-tachometer-alt"></i> Speed Up</button>
+    </div>
+
+    <div class="music-player">
+        <h3><i class="fas fa-music"></i> Music Player</h3>
+        <div class="music-controls">
+            <button class="music-btn" id="playBtn"><i class="fas fa-play"></i></button>
+            <button class="music-btn" id="pauseMusicBtn"><i class="fas fa-pause"></i></button>
+            <button class="music-btn" id="nextBtn"><i class="fas fa-forward"></i></button>
+        </div>
+        <div class="volume-control">
+            <i class="fas fa-volume-up"></i>
+            <input type="range" id="volume" min="0" max="1" step="0.1" value="0.5">
+        </div>
+        <div class="song-list">
+            <div class="song-item active" data-src="Rex Orange County - Happiness.mp3">Happiness</div>
+            <div class="song-item" data-src="The Walters -- I Love You So.mp3">I Love You So</div>
+            <div class="song-item" data-src="Sailor Song - Gigi Perez.mp3">Sailor Song</div>
+            <div class="song-item" data-src="Billie Eilish - BIRDS OF A FEATHER.mp3">BIRDS OF A FEATHER</div>
+        </div>
+    </div>
+
+    <script>
+        const heart = document.getElementById('heart');
+        const heartsContainer = document.getElementById('hearts-container');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const speedBtn = document.getElementById('speedBtn');
+        const message = document.querySelector('.message');
+        
+        // Music player elements
+        const playBtn = document.getElementById('playBtn');
+        const pauseMusicBtn = document.getElementById('pauseMusicBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const volumeControl = document.getElementById('volume');
+        const songItems = document.querySelectorAll('.song-item');
+        
+        const text = "I Love You";
+        const points = [];
+        let isPaused = false;
+        let animationSpeed = 1;
+        let hue = 0;
+        
+        // Audio context and variables
+        let audio = new Audio();
+        let currentSongIndex = 0;
+
+        // Generate heart shape points (mathematical equation)
+        for (let t = 0; t < Math.PI * 2; t += 0.05) {
+            const x = 16 * Math.pow(Math.sin(t), 3);
+            const y = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
+            points.push({ x: x, y: -y });
+        }
+
+        // Create text elements
+        points.forEach((point, i) => {
+            const span = document.createElement('span');
+            span.className = 'text';
+            span.innerText = text[i % text.length];
+            span.style.transform = `translate3d(${point.x * 10}px, ${point.y * 10}px, ${i * 2}px)`;
+            heart.appendChild(span);
+        });
+
+        // Create floating hearts in background
+        function createFloatingHearts() {
+            for (let i = 0; i < 15; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'floating-heart';
+                heart.innerHTML = '<i class="fas fa-heart"></i>';
+                
+                heart.style.left = `${Math.random() * 100}%`;
+                heart.style.animationDuration = `${Math.random() * 10 + 8}s`;
+                heart.style.animationDelay = `${Math.random() * 5}s`;
+                
+                heartsContainer.appendChild(heart);
+            }
+        }
+
+        // Color change animation
+        function updateColors() {
+            if (isPaused) return;
+            
+            hue = (hue + 0.5) % 360;
+            const color = `hsl(${hue}, 100%, 65%)`;
+            
+            document.querySelectorAll('.text').forEach((char, index) => {
+                const delay = index * 10;
+                char.style.color = `hsl(${(hue + delay) % 360}, 100%, 65%)`;
+            });
+            
+            requestAnimationFrame(updateColors);
+        }
+
+        // Mouse move interaction
+        document.addEventListener('mousemove', (e) => {
+            if (isPaused) return;
+            
+            const x = (e.clientX / window.innerWidth) * 2 - 1;
+            const y = (e.clientY / window.innerHeight) * 2 - 1;
+            
+            heart.style.transform = `translate(-50%, -50%) rotateX(${y * 30}deg) rotateY(${x * 30}deg)`;
+        });
+
+        // Click to change color scheme
+        document.addEventListener('click', () => {
+            hue = Math.random() * 360;
+        });
+
+        // Pause/resume animation
+        pauseBtn.addEventListener('click', () => {
+            isPaused = !isPaused;
+            
+            if (isPaused) {
+                heart.style.animationPlayState = 'paused';
+                pauseBtn.innerHTML = '<i class="fas fa-play"></i> Resume';
+            } else {
+                heart.style.animationPlayState = 'running';
+                pauseBtn.innerHTML = '<i class="fas fa-pause"></i> Pause';
+                updateColors();
+            }
+        });
+
+        // Change animation speed
+        speedBtn.addEventListener('click', () => {
+            animationSpeed = animationSpeed === 1 ? 2 : 1;
+            heart.style.animationDuration = `${15 / animationSpeed}s`;
+            speedBtn.innerHTML = animationSpeed === 1 ? 
+                '<i class="fas fa-tachometer-alt"></i> Speed Up' : 
+                '<i class="fas fa-tachometer-alt"></i> Slow Down';
+        });
+
+        // Music player functions
+        function loadSong(index) {
+            currentSongIndex = index;
+            const songSrc = songItems[index].getAttribute('data-src');
+            audio.src = songSrc;
+            audio.volume = volumeControl.value;
+            
+            // Update active song in playlist
+            songItems.forEach((item, i) => {
+                if (i === index) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+            
+            audio.play()
+                .then(() => {
+                    playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                })
+                .catch(error => {
+                    console.log("Auto-play was prevented:", error);
+                    playBtn.innerHTML = '<i class="fas fa-play"></i>';
+                });
+        }
+
+        function playPauseMusic() {
+            if (audio.paused) {
+                audio.play();
+                playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            } else {
+                audio.pause();
+                playBtn.innerHTML = '<i class="fas fa-play"></i>';
+            }
+        }
+
+        function nextSong() {
+            currentSongIndex = (currentSongIndex + 1) % songItems.length;
+            loadSong(currentSongIndex);
+        }
+
+        // Music player event listeners
+        playBtn.addEventListener('click', playPauseMusic);
+        
+        pauseMusicBtn.addEventListener('click', () => {
+            audio.pause();
+            playBtn.innerHTML = '<i class="fas fa-play"></i>';
+        });
+        
+        nextBtn.addEventListener('click', nextSong);
+        
+        volumeControl.addEventListener('input', () => {
+            audio.volume = volumeControl.value;
+        });
+        
+        // Song selection from playlist
+        songItems.forEach((item, index) => {
+            item.addEventListener('click', () => {
+                loadSong(index);
+            });
+        });
+        
+        // When song ends, play next one
+        audio.addEventListener('ended', nextSong);
+
+        // Initialize
+        createFloatingHearts();
+        updateColors();
+        loadSong(0); // Load the first song
+        
+        // Responsive adjustments
+        window.addEventListener('resize', () => {
+            // Reset heart position on resize
+            heart.style.transform = 'translate(-50%, -50%)';
+        });
+    </script>
+</body>
+</html>
